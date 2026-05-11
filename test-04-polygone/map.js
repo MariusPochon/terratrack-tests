@@ -1,73 +1,74 @@
 // On initialise la carte dans la div "map"
-// Le tableau [46.8, 7.15] = coordonnées de Fribourg (latitude, longitude)
-// Le 13 = niveau de zoom de départ
-var map = L.map('map').setView([46.8, 7.15], 15);
+// [46.8, 7.15] = coordonnées de Fribourg | 15 = niveau de zoom
+const map = L.map('map').setView([46.8, 7.15], 15);
 
-// On ajoute les tuiles OpenStreetMap (les images de la carte)
+// On ajoute les tuiles OpenStreetMap
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
 
-// On demande la position au navigateur
-navigator.geolocation.getCurrentPosition(
-    // Cas 1 : l'utilisateur accepte
-    function (position) {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
+// --- GÉOLOCALISATION ---
+function geolocalisation() {
+    console.log("Tentative de géolocalisation...");
+    navigator.geolocation.getCurrentPosition(
+        function (position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            map.setView([lat, lng], 14);
+            L.marker([lat, lng])
+                .addTo(map)
+                .bindPopup("Vous êtes ici !")
+                .openPopup();
+        },
+        function () {
+            console.log("Géolocalisation refusée ou indisponible");
+        }
+    );
+}
+geolocalisation();
 
-        // On recentre la carte sur la position de l'utilisateur
-        map.setView([lat, lng], 15);
-
-        // On ajoute un marqueur à sa position
-        L.marker([lat, lng])
-            .addTo(map)
-            .bindPopup("Vous êtes ici !")
-            .openPopup();
-    },
-
-    // Cas 2 : l'utilisateur refuse ou erreur
-    function (erreur) {
-        console.log("Géolocalisation refusée ou indisponible");
-        // La carte reste centrée sur Fribourg par défaut
-    }
-);
-
-// Fonction qui crée une icône de la couleur qu'on veut
-function creerIcone(couleur) {
-    return L.icon({
-        iconUrl: `img/marker-icon-${couleur}.png`,
-        shadowUrl: 'img/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
+// --- MARQUEURS COLORÉS ---
+// L.divIcon permet de créer une icône à partir de HTML pur
+// currentColor hérite la couleur CSS du div parent → 1 seul endroit à changer
+function createMarker(color) {
+    return L.divIcon({
+        className: '',
+        html: `
+            <div style="color: ${color}">
+                <svg viewBox="0 0 24 24" width="32" height="32">
+                    <path fill="currentColor"
+                        d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z"/>
+                </svg>
+            </div>
+        `,
+        iconSize: [32, 32],
+        iconAnchor: [16, 32]  // centre bas = pointe du pin sur les coordonnées exactes
     });
 }
 
-// Test avec différentes couleurs selon la catégorie
-L.marker([46.80, 7.15], {icon: creerIcone('gold')})
-    .addTo(map)
-    .bindPopup("Faune sauvage");
+// Marqueurs de test avec différentes catégories
+L.marker([46.80, 7.15], { icon: createMarker('#e74c3c') })
+    .addTo(map).bindPopup("Faune sauvage");
 
-L.marker([46.81, 7.16], {icon: creerIcone('black')})
-    .addTo(map)
-    .bindPopup("Flore protégée");
+L.marker([46.81, 7.16], { icon: createMarker('#2ecc71') })
+    .addTo(map).bindPopup("Flore protégée");
 
-L.marker([46.79, 7.14], {icon: creerIcone('red')})
-    .addTo(map)
-    .bindPopup("Patrimoine historique");
+L.marker([46.79, 7.14], { icon: createMarker('#f39c12') })
+    .addTo(map).bindPopup("Patrimoine historique");
 
-// Couche qui va stocker les zones dessinées
+// --- DESSIN DE ZONES ET MARKERS ---
+// FeatureGroup = couche qui stocke tout ce qu'on dessine
 const drawnItems = new L.FeatureGroup();
 map.addLayer(drawnItems);
 
-// Barre d'outils de dessin
+// On configure les outils de dessin disponibles
 const drawControl = new L.Control.Draw({
     draw: {
-        polygon: true,   // zones
-        marker: false,   // on gère nos propres marqueurs
-        circle: false,   // pas besoin
+        polygon: true,
+        // On passe notre icône custom à Leaflet.draw
+        marker: { icon: createMarker('#e74c3c') },
+        circle: false,
         rectangle: false,
         polyline: false,
         circlemarker: false
@@ -78,24 +79,28 @@ const drawControl = new L.Control.Draw({
 });
 map.addControl(drawControl);
 
-zone.bindPopup(`
-    <h3>Nom de la zone</h3>
-    <p>Description ici</p>
-    <img src="photo.jpg" width="100%"/>
-`).openPopup();
-
-// Quand l'utilisateur termine de dessiner
+// Événement déclenché quand l'utilisateur termine de dessiner
 map.on(L.Draw.Event.CREATED, function(e) {
-    const zone = e.layer;
+    const layer = e.layer;
+    const type = e.layerType; // "marker" ou "polygon"
 
-    zone.setStyle({
-        color: '#2ecc71',        // bordure
-        fillColor: '#2ecc71',    // remplissage
-        fillOpacity: 0.3         // transparence
-    });
-    drawnItems.addLayer(zone);
+    if (type === 'marker') {
+        // Les marqueurs n'ont pas de setStyle() → on gère séparément
+        const coords = layer.getLatLng();
+        layer.bindPopup(`Marqueur posé à : ${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}`).openPopup();
+        console.log("Coordonnées du marqueur :", coords);
 
-    // Récupérer les coordonnées
-    const coordonnees = zone.getLatLngs()[0];
-    console.log(coordonnees); // tableau de points
+    } else if (type === 'polygon') {
+        // Les polygones acceptent setStyle()
+        layer.setStyle({
+            color: '#2ecc71',
+            fillColor: '#2ecc71',
+            fillOpacity: 0.3
+        });
+        const coordonnees = layer.getLatLngs()[0];
+        layer.bindPopup(`Zone avec ${coordonnees.length} points`).openPopup();
+        console.log("Coordonnées de la zone :", coordonnees);
+    }
+
+    drawnItems.addLayer(layer);
 });
