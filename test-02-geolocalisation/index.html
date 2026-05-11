@@ -15,6 +15,9 @@
 <body>
 
 <div id="map"></div>
+<div id="button">
+    <button onclick="geolocalisation()">Geolocalisation</button>
+</div>
 
 <!-- Ton code JS -->
 <script>
@@ -29,30 +32,33 @@
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
 
-    // On demande la position au navigateur
-    navigator.geolocation.getCurrentPosition(
-        // Cas 1 : l'utilisateur accepte
-        function (position) {
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
+    function geolocalisation() {
+        console.log("Je tente de géolocaliser l'utilisateur !");
+        // On demande la position au navigateur
+        navigator.geolocation.getCurrentPosition(
+            // Cas 1 : l'utilisateur accepte
+            function (position) {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
 
-            // On recentre la carte sur la position de l'utilisateur
-            map.setView([lat, lng], 15);
+                // On recentre la carte sur la position de l'utilisateur
+                map.setView([lat, lng], 14);
 
-            // On ajoute un marqueur à sa position
-            L.marker([lat, lng])
-                .addTo(map)
-                .bindPopup("Vous êtes ici !")
-                .openPopup();
-        },
+                // On ajoute un marqueur à sa position
+                L.marker([lat, lng])
+                    .addTo(map)
+                    .bindPopup("Vous êtes ici !")
+                    .openPopup();
+            },
 
-        // Cas 2 : l'utilisateur refuse ou erreur
-        function (erreur) {
-            console.log("Géolocalisation refusée ou indisponible");
-            // La carte reste centrée sur Fribourg par défaut
-        }
-    );
-
+            // Cas 2 : l'utilisateur refuse ou erreur
+            function (erreur) {
+                console.log("Géolocalisation refusée ou indisponible");
+                // La carte reste centrée sur Fribourg par défaut
+            }
+        );
+    }
+    geolocalisation();
 </script>
 
 </body>

@@ -15,6 +15,9 @@
 <body>
 
 <div id="map"></div>
+<div id="button">
+    <button onclick="geolocalisation()">Geolocalisation</button>
+</div>
 
 <!-- Ton code JS -->
 <script>
@@ -29,54 +32,90 @@
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
 
-    // On demande la position au navigateur
-    navigator.geolocation.getCurrentPosition(
-        // Cas 1 : l'utilisateur accepte
-        function (position) {
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
+    function geolocalisation() {
+        console.log("Je tente de géolocaliser l'utilisateur !");
+        // On demande la position au navigateur
+        navigator.geolocation.getCurrentPosition(
+            // Cas 1 : l'utilisateur accepte
+            function (position) {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
 
-            // On recentre la carte sur la position de l'utilisateur
-            map.setView([lat, lng], 15);
+                // On recentre la carte sur la position de l'utilisateur
+                map.setView([lat, lng], 14);
 
-            // On ajoute un marqueur à sa position
-            L.marker([lat, lng])
-                .addTo(map)
-                .bindPopup("Vous êtes ici !")
-                .openPopup();
-        },
+                // On ajoute un marqueur à sa position
+                L.marker([lat, lng])
+                    .addTo(map)
+                    .bindPopup("Vous êtes ici !")
+                    .openPopup();
+            },
 
-        // Cas 2 : l'utilisateur refuse ou erreur
-        function (erreur) {
-            console.log("Géolocalisation refusée ou indisponible");
-            // La carte reste centrée sur Fribourg par défaut
-        }
-    );
+            // Cas 2 : l'utilisateur refuse ou erreur
+            function (erreur) {
+                console.log("Géolocalisation refusée ou indisponible");
+                // La carte reste centrée sur Fribourg par défaut
+            }
+        );
+    }
+    geolocalisation();
 
     // Fonction qui crée une icône de la couleur qu'on veut
-    function creerIcone(couleur) {
-        return L.icon({
-            iconUrl: `img/marker-icon-${couleur}.png`,
-            shadowUrl: 'img/marker-shadow.png',
-            iconSize: [25, 41],
-            iconAnchor: [12, 41],
-            popupAnchor: [1, -34],
-            shadowSize: [41, 41]
+    // function creerIcone(couleur) {
+    //     return L.icon({
+    //         iconUrl: `img/marker-icon-${couleur}.png`,
+    //         shadowUrl: 'img/marker-shadow.png',
+    //         iconSize: [25, 41],
+    //         iconAnchor: [12, 41],
+    //         popupAnchor: [1, -34],
+    //         shadowSize: [41, 41]
+    //     });
+    // }
+
+    // L.divIcon crée une icône à partir de HTML
+    function createMarker(color) {
+        return L.divIcon({
+            className: '', // on vide les classes CSS par défaut de Leaflet
+            html: `
+            <div style="color: ${color}">
+                <svg viewBox="0 0 24 24" width="32" height="32">
+                    <!-- currentColor va hériter la couleur du div parent -->
+                    <path
+                        fill="currentColor"
+                        d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z"
+                    />
+                </svg>
+            </div>
+        `,
+            iconSize: [32, 32],    // taille de l'icône en pixels
+            iconAnchor: [16, 32]   // point d'ancrage : centre bas = pointe du pin
         });
     }
 
-    // Test avec différentes couleurs selon la catégorie
-    L.marker([46.80, 7.15], {icon: creerIcone('gold')})
+    L.marker([46.80, 7.15], { icon: createMarker('#e74c3c') })
         .addTo(map)
         .bindPopup("Faune sauvage");
 
-    L.marker([46.81, 7.16], {icon: creerIcone('black')})
+    L.marker([46.81, 7.16], { icon: createMarker('#2ecc71') })
         .addTo(map)
         .bindPopup("Flore protégée");
 
-    L.marker([46.79, 7.14], {icon: creerIcone('red')})
+    L.marker([46.79, 7.14], { icon: createMarker('#f39c12') })
         .addTo(map)
         .bindPopup("Patrimoine historique");
+
+    // // Test avec différentes couleurs selon la catégorie
+    // L.marker([46.80, 7.15], {icon: creerIcone('gold')})
+    //     .addTo(map)
+    //     .bindPopup("Faune sauvage");
+    //
+    // L.marker([46.81, 7.16], {icon: creerIcone('black')})
+    //     .addTo(map)
+    //     .bindPopup("Flore protégée");
+    //
+    // L.marker([46.79, 7.14], {icon: creerIcone('red')})
+    //     .addTo(map)
+    //     .bindPopup("Patrimoine historique");
 </script>
 
 </body>

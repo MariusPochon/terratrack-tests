@@ -57,3 +57,45 @@ L.marker([46.81, 7.16], {icon: creerIcone('black')})
 L.marker([46.79, 7.14], {icon: creerIcone('red')})
     .addTo(map)
     .bindPopup("Patrimoine historique");
+
+// Couche qui va stocker les zones dessinées
+const drawnItems = new L.FeatureGroup();
+map.addLayer(drawnItems);
+
+// Barre d'outils de dessin
+const drawControl = new L.Control.Draw({
+    draw: {
+        polygon: true,   // zones
+        marker: false,   // on gère nos propres marqueurs
+        circle: false,   // pas besoin
+        rectangle: false,
+        polyline: false,
+        circlemarker: false
+    },
+    edit: {
+        featureGroup: drawnItems
+    }
+});
+map.addControl(drawControl);
+
+zone.bindPopup(`
+    <h3>Nom de la zone</h3>
+    <p>Description ici</p>
+    <img src="photo.jpg" width="100%"/>
+`).openPopup();
+
+// Quand l'utilisateur termine de dessiner
+map.on(L.Draw.Event.CREATED, function(e) {
+    const zone = e.layer;
+
+    zone.setStyle({
+        color: '#2ecc71',        // bordure
+        fillColor: '#2ecc71',    // remplissage
+        fillOpacity: 0.3         // transparence
+    });
+    drawnItems.addLayer(zone);
+
+    // Récupérer les coordonnées
+    const coordonnees = zone.getLatLngs()[0];
+    console.log(coordonnees); // tableau de points
+});
