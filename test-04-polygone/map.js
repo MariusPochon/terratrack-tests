@@ -26,6 +26,7 @@ function geolocalisation() {
         }
     );
 }
+
 geolocalisation();
 
 // --- MARQUEURS COLORÉS ---
@@ -47,16 +48,6 @@ function createMarker(color) {
     });
 }
 
-// Marqueurs de test avec différentes catégories
-L.marker([46.80, 7.15], { icon: createMarker('#e74c3c') })
-    .addTo(map).bindPopup("Faune sauvage");
-
-L.marker([46.81, 7.16], { icon: createMarker('#2ecc71') })
-    .addTo(map).bindPopup("Flore protégée");
-
-L.marker([46.79, 7.14], { icon: createMarker('#f39c12') })
-    .addTo(map).bindPopup("Patrimoine historique");
-
 // --- DESSIN DE ZONES ET MARKERS ---
 // FeatureGroup = couche qui stocke tout ce qu'on dessine
 const drawnItems = new L.FeatureGroup();
@@ -67,7 +58,7 @@ const drawControl = new L.Control.Draw({
     draw: {
         polygon: true,
         // On passe notre icône custom à Leaflet.draw
-        marker: { icon: createMarker('#e74c3c') },
+        marker: {icon: createMarker('#e74c3c')},
         circle: false,
         rectangle: false,
         polyline: false,
@@ -80,14 +71,13 @@ const drawControl = new L.Control.Draw({
 map.addControl(drawControl);
 
 // Événement déclenché quand l'utilisateur termine de dessiner
-map.on(L.Draw.Event.CREATED, function(e) {
+map.on(L.Draw.Event.CREATED, function (e) {
     const layer = e.layer;
     const type = e.layerType; // "marker" ou "polygon"
 
     if (type === 'marker') {
-        // Les marqueurs n'ont pas de setStyle() → on gère séparément
         const coords = layer.getLatLng();
-        layer.bindPopup(`Marqueur posé à : ${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}`).openPopup();
+        layer.bindPopup(`Marqueur`).openPopup();
         console.log("Coordonnées du marqueur :", coords);
 
     } else if (type === 'polygon') {
@@ -98,7 +88,11 @@ map.on(L.Draw.Event.CREATED, function(e) {
             fillOpacity: 0.3
         });
         const coordonnees = layer.getLatLngs()[0];
-        layer.bindPopup(`Zone avec ${coordonnees.length} points`).openPopup();
+        layer.bindPopup(
+            `<h3>Test</h3>
+            <p>Description</p>
+            <img src="img/paysage.avif" width="100%"/>`
+        ).openPopup();
         console.log("Coordonnées de la zone :", coordonnees);
     }
 
