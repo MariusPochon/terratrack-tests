@@ -1,8 +1,11 @@
 <?php
 header('Content-Type: application/json');
 
-require_once __DIR__ . '/db/connect.php';
+$pdo = new PDO(
+    "mysql:host=db;dbname=testdb;charset=utf8mb4",
+    "root",
+    "root"
+);
 
-$db = Connexion::getInstance();
-$rows = $db->selectQuery("SELECT pk_categorie, nom, couleur FROM t_categorie ORDER BY nom");
-echo json_encode($rows);
+$stmt = $pdo->query("SELECT pk_categorie, nom, couleur FROM t_categorie ORDER BY nom");
+echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));

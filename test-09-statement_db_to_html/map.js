@@ -117,7 +117,7 @@ function popupHTML(nom, description, catNom, catCouleur, date, heure, photoIds) 
 
     const dateHTML = (date || heure)
         ? `<div style="margin-top:8px; font-size:11px; color:#999;">
-               ${date || ''} ${heure ? 'à ' + heure : ''}
+               📅 ${date || ''} ${heure ? 'à ' + heure : ''}
            </div>`
         : '';
 
@@ -248,7 +248,7 @@ form.addEventListener('submit', function (e) {
         .then(r => r.json())
         .then(data => {
             if (data.success) {
-                statusEl.textContent = "Enregistré (id " + data.id + ")";
+                statusEl.textContent = "Enregistré ✅ (id " + data.id + ")";
 
                 // Récupère les infos de catégorie choisie pour la popup
                 const pkCat  = form.fk_categorie.value;

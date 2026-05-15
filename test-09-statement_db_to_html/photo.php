@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/db/connect.php';
 // Sert une image stockée en base de données
 // Usage : photo.php?id=3
 
@@ -10,11 +9,14 @@ if ($id <= 0) {
     exit;
 }
 
-$db = Connexion::getInstance();
-$stmt = $db->ExecuteQuery(
-    "SELECT type_mime, contenu FROM t_photo WHERE pk_photo = :id",
-    [':id' => $id]
+$pdo = new PDO(
+    "mysql:host=db;dbname=testdb;charset=utf8mb4",
+    "root",
+    "root"
 );
+
+$stmt = $pdo->prepare("SELECT type_mime, contenu FROM t_photo WHERE pk_photo = :id");
+$stmt->execute([':id' => $id]);
 $photo = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$photo) {
