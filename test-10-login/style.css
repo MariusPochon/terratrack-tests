@@ -1,0 +1,147 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f0f2f5;
+    font-family: sans-serif;
+}
+
+/* --- Carte centrale --- */
+.carte {
+    background: white;
+    border-radius: 10px;
+    padding: 36px 40px;
+    width: 400px;
+    max-width: 95vw;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    font-size: 22px;
+    color: #222;
+    margin-bottom: 24px;
+}
+
+/* --- Formulaire --- */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+label {
+    font-size: 13px;
+    font-weight: bold;
+    color: #555;
+    margin-top: 8px;
+}
+
+input {
+    padding: 9px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    width: 100%;
+    transition: border-color 0.2s;
+}
+
+input:focus {
+    outline: none;
+    border-color: #2ecc71;
+}
+
+button[type="submit"] {
+    margin-top: 16px;
+    padding: 10px;
+    background: #2ecc71;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+button[type="submit"]:hover {
+    background: #27ae60;
+}
+
+/* --- Alertes --- */
+.alerte {
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.alerte.erreur {
+    background: #fdecea;
+    color: #c0392b;
+    border: 1px solid #e74c3c;
+}
+
+.alerte.succes {
+    background: #eafaf1;
+    color: #1e8449;
+    border: 1px solid #2ecc71;
+}
+
+/* --- Lien bas de carte --- */
+.lien {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 14px;
+    color: #777;
+}
+
+.lien a {
+    color: #2ecc71;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.lien a:hover {
+    text-decoration: underline;
+}
+
+/* --- Page d'accueil protégée --- */
+.entete {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.btn-logout {
+    padding: 6px 14px;
+    background: #e74c3c;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.btn-logout:hover {
+    background: #c0392b;
+}
+
+.info-bloc {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 14px;
+    color: #444;
+}
